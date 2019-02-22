@@ -5,10 +5,11 @@
     <title></title>
     <style>
       .text {
+        width:250px;
         display: flex;
         flex-direction: row;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 20px;
+        font-size: 19px;
         background-color: whitesmoke;
         color: #0277bd;
         border-style: hidden;
@@ -55,6 +56,7 @@
       src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.min.js"
     ></script>
     <script type="text/javascript">
+    // console.log(`${window.location.host}`)
       const append_pipeline_head = function(ele) {
         var pattern = / <(h2)[^>]*>(.*?)<\/\1>/
         var box = document.createElement("div")
@@ -84,6 +86,10 @@
         document.getElementById(ele.parent_id).append(text)
         var div = document.createElement("div")
         div.id = ele.html.match(pattern)[2]
+        var pattern_url=/<a href='(.*?)' class='stage' >/
+            // div.onclick=function(){window.open(`https://atlas-uat.imdo.co${ele.html.match(pattern_url)[1]}`)}
+            div.onclick=function(){window.open(`https://atlas-uat.imdo.co${ele.html.match(pattern_url)[1]}`) }
+            // div.onclick=function(){window.open('http://www.baidu.com')}
         if (check_content("stage_bar Failed", ele.html)) {
           div.className = "fail"
         } else {
@@ -108,14 +114,25 @@
             append_pipeline_head(obj[data])
           }
         }
+        var audio = document.getElementById('music');
+        
+        // if(document.getElementsByClassName("build").length==0 && document.getElementsByClassName("fail").length==0){
+        //   audio.pause();
+        // }
+        // else{
+        //   audio.play();
+        // }
+        console.log("build",document.getElementsByClassName("build").length)
+        console.log("fail",document.getElementsByClassName("fail").length)
       }
       const refresh = function(obj) {
         for (var data in obj) {
-         
-          var group_of_pipelines = new RegExp("group_of_pipelines")
-          
           if (check_content("pipeline_header", obj[data].html)) {
             var pattern = / <(a)[^>]*>(.*?)<\/\1>/
+            var pattern_url=/<a href='(.*?)' class='stage' >/
+            // document.getElementById(obj[data].html.match(pattern)[2]).onclick=function(){window.open('http://www.baidu.com')}
+              // document.getElementById(obj[data].html.match(pattern)[2]).onclick=function(){window.open(`https://atlas-uat.imdo.co${obj[data].html.match(pattern_url)[1]}`)}
+              document.getElementById(obj[data].html.match(pattern)[2]).onclick=function(){window.open(`https://atlas-uat.imdo.co${obj[data].html.match(pattern_url)[1]}`) }
             if (check_content("stage_bar Failed", obj[data].html)) {
               document.getElementById(
                 obj[data].html.match(pattern)[2]
@@ -133,6 +150,15 @@
             }
           }
         }
+        var audio = document.getElementById('music');
+        if(document.getElementsByClassName("build").length==0 && document.getElementsByClassName("fail").length==0){
+          audio.pause();
+        }
+        else{
+          audio.play();
+        }
+        console.log("build",document.getElementsByClassName("build").length)
+        console.log("fail",document.getElementsByClassName("fail").length)
       }
       const get = function(url) {
         const promise = new Promise(function(resolve, reject) {
@@ -153,7 +179,9 @@
         })
         return promise
       }
-      get("http://localhost:3000/pipelines").then(
+     
+      
+      get(`http://${window.location.host}/pipelines`).then(
         function(json) {
           var timestamp = Date.parse(new Date())
           console.log("initial time: ", timestamp)
@@ -166,7 +194,7 @@
       )
 
       setInterval(() => {
-        get("http://localhost:3000/pipelines").then(
+        get(`http://${window.location.host}/pipelines`).then(
           function(json) {
             var timestamp = Date.parse(new Date())
             console.log("refresh time: ", timestamp)
@@ -185,5 +213,11 @@
       id="input"
       style="background-color:lightgray;width:100%;height:100%;display:flex;flex-direction: column;justify-content: space-around"
     ></div>
+    <audio src="http://fjdx.sc.chinaz.net/Files/DownLoad/sound1/201901/11089.mp3" controls="controls" id="music" preload:auto hidden> </audio>
+    <!-- <audio id="music">
+      <source src="horse.ogg" type="audio/ogg">
+      <source src="http://fjdx.sc.chinaz.net/Files/DownLoad/sound1/201902/11182.mp3" type="audio/mpeg" preload:auto>
+       您的浏览器不支持 audio 与元素。
+    </audio> -->
   </body>
 </html>

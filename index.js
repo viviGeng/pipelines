@@ -21,12 +21,13 @@ var options = {
 }
 
 var result = {}
-
 function test() {
+
   request(options, function(error, response, body) {
     if (error) throw new Error(error)
     var timestamp = Date.parse(new Date())
-    console.log(timestamp)
+    // console.log(timestamp)
+   
     result = body
   })
 }
@@ -37,12 +38,18 @@ setInterval(() => {
 
 app.get("/pipelines", function(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*")
-  res.send(result)
+  
+    store=result
+    res.send(result)
+  
 })
 app.get("/go/pipelines", function(req, res) {
+  // console.log(req.connection.remoteAddress)
+  
   setTimeout(() => {
     var data = fs.readFileSync("./index.html", "utf8")
     res.send(data)
   }, 1000)
 })
+
 http.createServer(app).listen(3000)
